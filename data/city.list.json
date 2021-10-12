@@ -1,0 +1,216 @@
+[
+  {
+    "id": 2747891,
+    "name": "Rotterdam",
+    "state": "",
+    "country": "NL",
+    "coord": {
+      "lon": 4.47917,
+      "lat": 51.922501
+    }
+  },
+  {
+    "id": 2747910,
+    "name": "Rosmalen",
+    "state": "",
+    "country": "NL",
+    "coord": {
+      "lon": 5.36528,
+      "lat": 51.716671
+    }
+  },
+  {
+    "id": 2753439,
+    "name": "Hulst",
+    "state": "",
+    "country": "NL",
+    "coord": {
+      "lon": 4.05278,
+      "lat": 51.279999
+    }
+  },
+  {
+    "id": 2753516,
+    "name": "Húns",
+    "state": "",
+    "country": "NL",
+    "coord": {
+      "lon": 5.66572,
+      "lat": 53.159409
+    }
+  },
+  {
+    "id": 2753548,
+    "name": "Houthem",
+    "state": "",
+    "country": "NL",
+    "coord": {
+      "lon": 5.79306,
+      "lat": 50.872501
+    }
+  },
+
+  {
+    "id": 2753557,
+    "name": "Houten",
+    "state": "",
+    "country": "NL",
+    "coord": {
+      "lon": 5.16806,
+      "lat": 52.028332
+    }
+  },
+  {
+    "id": 2753638,
+    "name": "Hoorn",
+    "state": "",
+    "country": "NL",
+    "coord": {
+      "lon": 5.05972,
+      "lat": 52.642502
+    }
+  },
+  {
+    "id": 2753706,
+    "name": "Hoogezand",
+    "state": "",
+    "country": "NL",
+    "coord": {
+      "lon": 6.76111,
+      "lat": 53.161671
+    }
+  },
+
+  {
+    "id": 2753719,
+    "name": "Hoogeveen",
+    "state": "",
+    "country": "NL",
+    "coord": {
+      "lon": 6.47639,
+      "lat": 52.7225
+    }
+  },
+  {
+    "id": 2753852,
+    "name": "Holwerd",
+    "state": "",
+    "country": "NL",
+    "coord": {
+      "lon": 5.90073,
+      "lat": 53.368149
+    }
+  },
+  {
+    "id": 2753887,
+    "name": "Hollum",
+    "state": "",
+    "country": "NL",
+    "coord": {
+      "lon": 5.63805,
+      "lat": 53.4394
+    }
+  },
+  {
+    "id": 2753996,
+    "name": "Hoensbroek",
+    "state": "",
+    "country": "NL",
+    "coord": {
+      "lon": 5.92528,
+      "lat": 50.92387
+    }
+  },
+  {
+    "id": 2754007,
+    "name": "Hoek van Holland",
+    "state": "",
+    "country": "NL",
+    "coord": {
+      "lon": 4.13333,
+      "lat": 51.977501
+    }
+  },
+
+  {
+    "id": 2754064,
+    "name": "Hilversum",
+    "state": "",
+    "country": "NL",
+    "coord": {
+      "lon": 5.17639,
+      "lat": 52.223331
+    }
+  },
+  {
+    "id": 2754273,
+    "name": "Het Hazebos",
+    "state": "",
+    "country": "NL",
+    "coord": {
+      "lon": 6.60543,
+      "lat": 52.564899
+    }
+  },
+  {
+    "id": 2754352,
+    "name": "Herkenbosch",
+    "state": "",
+    "country": "NL",
+    "coord": {
+      "lon": 6.06389,
+      "lat": 51.153332
+    }
+  },
+  {
+    "id": 2754386,
+    "name": "Hengstdal",
+    "state": "",
+    "country": "NL",
+    "coord": {
+      "lon": 5.88333,
+      "lat": 51.833328
+    }
+  },
+  {
+    "id": 2754389,
+    "name": "Hengevelde",
+    "state": "",
+    "country": "NL",
+    "coord": {
+      "lon": 6.63611,
+      "lat": 52.199169
+    }
+  },
+
+  {
+    "id": 2754394,
+    "name": "Hengelo",
+    "state": "",
+    "country": "NL",
+    "coord": {
+      "lon": 6.79306,
+      "lat": 52.265831
+    }
+  },
+  {
+    "id": 2759794,
+    "name": "Amsterdam",
+    "state": "",
+    "country": "NL",
+    "coord": {
+      "lon": 4.88969,
+      "lat": 52.374031
+    }
+  },
+  {
+    "id": 7874246,
+    "name": "Musiskwartier",
+    "state": "",
+    "country": "NL",
+    "coord": {
+      "lon": 5.91203,
+      "lat": 51.982712
+    }
+  }
+]

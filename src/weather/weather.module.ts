@@ -5,10 +5,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { MongoService } from './mongo/mongo.service';
 import { OpenweatherService } from './openweather/openweather.service';
 
+import { City, CityWeatherSchema } from './mongo/schemas/city-weather.schema';
 import {
-  CityWeather,
-  CityWeatherSchema,
-} from './mongo/schemas/city-weather.schema';
+  CityHistory,
+  CityHistorySchema,
+} from './mongo/schemas/city-history.schema';
 
 @Module({
   controllers: [WeatherController],
@@ -16,7 +17,8 @@ import {
   imports: [
     ConfigModule,
     MongooseModule.forFeature([
-      { name: CityWeather.name, schema: CityWeatherSchema },
+      { name: City.name, schema: CityWeatherSchema },
+      { name: CityHistory.name, schema: CityHistorySchema },
     ]),
   ],
 })

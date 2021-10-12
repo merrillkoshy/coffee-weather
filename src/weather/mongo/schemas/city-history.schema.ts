@@ -2,18 +2,18 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 @Schema()
-export class City extends Document {
+export class CityHistory extends Document {
   @Prop({ required: true, unique: true })
   cityName: string;
 
   @Prop({ required: true })
-  cityId: number;
+  lat: number;
 
-  @Prop({ type: Object, required: true })
-  coord: {
-    lat: number;
-    lon: number;
-  };
+  @Prop({ required: true })
+  lon: number;
+
+  @Prop({ required: true })
+  dt: number;
 
   @Prop({ required: true })
   weather: string;
@@ -34,4 +34,4 @@ export class City extends Document {
   expirationDate: Date;
 }
 
-export const CityWeatherSchema = SchemaFactory.createForClass(City);
+export const CityHistorySchema = SchemaFactory.createForClass(CityHistory);

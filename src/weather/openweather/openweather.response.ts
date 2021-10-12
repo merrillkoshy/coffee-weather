@@ -1,51 +1,42 @@
-export class OpenweatherResponse {
+export interface weather {
   id: number;
+  main: string;
+  description: string;
+  icon: string;
+}
 
+export class OpenweatherResponse {
+  id?: number;
   name: string;
+
+  cityId: number;
 
   coord: {
     lat: number;
     lon: number;
   };
 
-  weather: {
-    id: number;
-    main: string;
-    description: string;
-    icon: string;
-  }[];
+  lat?: number;
+  lon?: number;
+  weather?: weather[];
 
-  base: string;
-
-  main: {
+  current?: {
+    dt: number;
     temp: number;
     feels_like: number;
-    temp_min: number;
-    temp_max: number;
     pressure: number;
     humidity: number;
+    weather: Array<weather>;
   };
+  daily?: any;
+  temp?: number;
 
-  visibility: string;
+  feels_like?: number;
 
-  wind: {
-    speed: number;
-    deg: number;
-  };
+  pressure?: number;
+  humidity?: number;
 
-  clouds: {
-    all: number;
-  };
+  dt?: number;
 
-  dt: number;
-
-  sys: {
-    type: number;
-    id: number;
-    country: string;
-    sunrise: number;
-    sunset: number;
-  };
-
-  timezone: number;
+  timezone?: number;
 }
