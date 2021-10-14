@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import data from '../../../data/city.list.json';
 import { ConfigService } from '@nestjs/config';
 import Axios, { AxiosResponse } from 'axios';
 import { OpenweatherResponse } from './openweather.response';
@@ -19,26 +18,6 @@ export class OpenweatherService {
   // create(createOpenweatherDto: CreateOpenweatherDto) {
   //   return 'This action adds a new openweather';
   // }
-  async findAllCities(): Promise<
-    Promise<AxiosResponse<OpenweatherResponse>>[]
-  > {
-    try {
-      const getAllCities = await data.map(
-        (city): Promise<AxiosResponse<OpenweatherResponse>> => {
-          return Axios.get(this.WEATHER_API_URL, {
-            params: {
-              q: city.name,
-              appid: this.configService.get<string>('OPENWEATHER_API_KEY'),
-              units: this.UNIT_METRICS,
-            },
-          });
-        },
-      );
-      return await getAllCities;
-    } catch (error) {
-      console.log(error);
-    }
-  }
   findCity(cityName: string): Promise<AxiosResponse<OpenweatherResponse>> {
     return Axios.get(this.WEATHER_API_URL, {
       params: {

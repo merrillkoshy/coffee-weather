@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+} from '@nestjs/common';
 import {
   ApiOperation,
   ApiResponse,
@@ -59,7 +67,7 @@ export class WeatherController {
       return mongoRes;
     } else {
       job.stop();
-      throw new DataNotFoundHttpException();
+      return HttpStatus.NOT_FOUND;
     }
   }
   @Post() //ep-2
@@ -67,7 +75,7 @@ export class WeatherController {
     summary:
       'Should create a new city and retrieve the current temperature and other basic weather data for that city',
   })
-  @ApiOkResponse({ status: 200, description: 'New city created.' })
+  @ApiOkResponse({ status: 201, description: 'New city created.' })
   @ApiConflictResponse({
     status: 409,
     description: 'City with same name exists',
@@ -79,9 +87,9 @@ export class WeatherController {
       return await this.mongo.create(openweatherRes.data);
     } catch (error) {
       console.error(error);
-      if (error?.response.status === 409) {
+      if (error?.response?.status === 409) {
         return { statusCode: 409, error: error.message };
-      } else if (error?.response.status === 404) {
+      } else if (error?.response?.status === 404) {
         throw new CityNotFoundHttpException(city.cityName);
       }
       return { statusCode: 500, error: error.message };

@@ -5,22 +5,25 @@ services:
     image: nestjs-api-dev:1.0.0
     build:
       context: .
+      target: development
       dockerfile: ./Dockerfile
-      command: npm run start:dev
-    ports:
-      - 3000:3000
-      - 3001:9229
-    networks:
-      - nesjs-network
-    depends_on:
-      - mongodb
+    command: npm run start:dev
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+      - 3001:9229
+    env_file:
+      - .env
+    networks:
+      - nesjs-network
+    depends_on:
+      - coffeexmongo
     restart: unless-stopped
-  mongodb:
+  coffeexmongo:
     image: mongo:latest
-    container_name: mongodb
+    container_name: coffeexmongo
     volumes:
       - ./database:/data/weatherdb
     ports:
@@ -36,12 +39,12 @@ services:
       dockerfile: ./Dockerfile
     command: npm run start:prod
     ports:
-      - 3000:3000
+      - ${APP_PORT}:${APP_PORT}
       - 9229:9229
     networks:
       - nesjs-network
     depends_on:
-      - mongodb
+      - coffeexmongo
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules

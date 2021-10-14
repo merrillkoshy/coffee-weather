@@ -10,12 +10,17 @@ import {
   CityHistory,
   CityHistorySchema,
 } from './mongo/schemas/city-history.schema';
-
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { WeatherSchedulerService } from './weatherscheduler/weather.scheduler.service';
 
 @Module({
   controllers: [WeatherController],
-  providers: [MongoService, OpenweatherService, WeatherSchedulerService],
+  providers: [
+    MongoService,
+    OpenweatherService,
+    WeatherSchedulerService,
+    SchedulerRegistry,
+  ],
   imports: [
     ConfigModule,
     MongooseModule.forFeature([
