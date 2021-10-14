@@ -7,7 +7,7 @@ import {
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { Model } from 'mongoose';
-import { WeatherModule } from '../src/weather/weather.module';
+import { WeatherModule } from '../src/api-service/main';
 import { factory } from 'fakingoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
@@ -66,7 +66,9 @@ describe('AppController (e2e)', () => {
   };
   it('creates a city', async () => {
     try {
-      await expect((await postData()).text.includes('Saskatchewan')).toBe(true);
+      await postData().then(async result => {
+        await expect(result.text).toContain('Saskatchewan');
+      });
     } catch (error) {
       console.log(error);
     }
@@ -75,9 +77,9 @@ describe('AppController (e2e)', () => {
   });
   it('fetches a city', async () => {
     try {
-      await expect(
-        (await fetchData('Saskatchewan')).body.includes('Saskatchewan'),
-      ).toBe(true);
+      await fetchData('Saskatchewan').then(async result => {
+        await expect(result.text).toContain('Saskatchewan');
+      });
     } catch (error) {
       console.log(error);
     }

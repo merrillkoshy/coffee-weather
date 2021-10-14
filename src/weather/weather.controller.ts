@@ -37,15 +37,15 @@ export class WeatherController {
     private readonly mongo: MongoService,
     private readonly openweather: OpenweatherService,
 
-    private schedulerRegistry: SchedulerRegistry,
     private readonly weatherscheduler: WeatherSchedulerService,
+    private schedulerRegistry: SchedulerRegistry,
   ) {}
 
   //The following are the endpoints(ep) described in the assessment
   @Get() //ep-1
   @ApiOperation({
     summary:
-      'Should return a list of all cities (id and name).\nShould include the latest weather data for that city (as stored in the database) -Temperature and some basic other data from OpenWeatherMap API',
+      'Returns a list of all cities with the latest weather data for that city (as stored in the database)',
   })
   @ApiResponse({
     status: 200,
@@ -55,25 +55,23 @@ export class WeatherController {
   @ApiOkResponse({ status: 200, description: 'Cities fetched.' })
   @ApiNotFoundResponse({ status: 404, description: 'None found in DB.' })
   public async getListOfCities() {
-    //better to trigger the CronJob only if there is anything in the db,
-    const job = this.schedulerRegistry.getCronJob('update_cities');
+    // const job = this.schedulerRegistry.getCronJob('update_cities');
     const mongoRes = await this.mongo.findAllCities();
     if (mongoRes && mongoRes.length > 0) {
       // eslint-disable-next-line prettier/prettier
       mongoRes.filter(res => {
         if (res.expirationDate.getTime() > new Date().getTime()) return res;
       });
-      job.start();
+      // job.start();
       return mongoRes;
     } else {
-      job.stop();
       return HttpStatus.NOT_FOUND;
     }
   }
   @Post() //ep-2
   @ApiOperation({
     summary:
-      'Should create a new city and retrieve the current temperature and other basic weather data for that city',
+      'Creates a new city and retrieve the current temperature and other basic weather data for that city',
   })
   @ApiOkResponse({ status: 201, description: 'New city created.' })
   @ApiConflictResponse({
@@ -98,7 +96,7 @@ export class WeatherController {
 
   @Delete(':id') //ep-3
   @ApiOperation({
-    summary: 'Should delete the city and its weather data from the database',
+    summary: 'Deletes the city and its weather data from the database',
   })
   @ApiResponse({
     status: 200,
@@ -116,7 +114,7 @@ export class WeatherController {
   @Get('weather') //ep-4
   @ApiOperation({
     summary:
-      "Should return an array for every city in the database and it's last known weather data.",
+      "Returns an array for every city in the database and it's last known weather data.",
   })
   @ApiResponse({
     status: 200,
@@ -141,7 +139,7 @@ export class WeatherController {
   @Get(':city/weather') //ep-5
   @ApiOperation({
     summary:
-      'Should return the last known weather data for the city given by name (not id).\nIf a city is not found in the database, it should realtime retrieve the data from OpenWeatherMap API.',
+      'Returns the last known weather data for the city given by name (not id).\nIf a city is not found in the database, it should realtime retrieve the data from OpenWeatherMap API.',
   })
   @ApiResponse({
     status: 200,

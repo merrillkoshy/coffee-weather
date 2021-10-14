@@ -2,14 +2,13 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { MongoService } from '../mongo/mongo.service';
 import { OpenweatherService } from '../openweather/openweather.service';
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 //Cannot get ConfigService to put in the env variables because
 //It evaluates .env after all the imports and decorators are resolved
 @Injectable()
 export class WeatherSchedulerService {
-  private readonly logger = new Logger(WeatherSchedulerService.name);
-
   constructor(
     private readonly mongo: MongoService,
     private readonly openweather: OpenweatherService,

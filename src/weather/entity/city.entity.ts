@@ -1,6 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CityEntity {
+  @ApiProperty({
+    example: 'Rotterdam',
+    description: 'The name of city in OpenWeatherMaps',
+  })
   name: string;
 
   @ApiProperty({
