@@ -1,11 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { WeatherController } from './weather.controller';
 import { ConfigService } from '@nestjs/config';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { MongoService } from './mongo/mongo.service';
 import { getModelToken } from '@nestjs/mongoose';
 import { City } from './mongo/schemas/city-weather.schema';
 import { CityHistory } from './mongo/schemas/city-history.schema';
 import { OpenweatherService } from './openweather/openweather.service';
+import { WeatherSchedulerService } from './weatherscheduler/weather.scheduler.service';
 describe('WeatherController', () => {
   let controller: WeatherController;
 
@@ -13,6 +15,8 @@ describe('WeatherController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [WeatherController],
       providers: [
+        SchedulerRegistry,
+        WeatherSchedulerService,
         MongoService,
         OpenweatherService,
         ConfigService,

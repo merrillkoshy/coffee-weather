@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { ConfigService } from '@nestjs/config';
 import { MongoService } from '../mongo/mongo.service';
 import { OpenweatherService } from '../openweather/openweather.service';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -12,12 +11,9 @@ export class WeatherSchedulerService {
   private readonly logger = new Logger(WeatherSchedulerService.name);
 
   constructor(
-    private configService: ConfigService,
     private readonly mongo: MongoService,
     private readonly openweather: OpenweatherService,
   ) {}
-
-  private readonly sm = this?.configService.get<string>('CRON_INTERVAL');
 
   @Cron(CronExpression[process.env.CRON_INTERVAL], {
     name: 'update_cities',
