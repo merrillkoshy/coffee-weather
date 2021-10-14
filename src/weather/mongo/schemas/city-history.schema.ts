@@ -5,31 +5,29 @@ import { Document } from 'mongoose';
 export class CityHistory extends Document {
   @Prop({ required: true, unique: true })
   cityName: string;
-
   @Prop({ required: true })
-  lat: number;
+  id: number;
 
-  @Prop({ required: true })
-  lon: number;
+  @Prop({ type: Object, required: true })
+  historicData: {
+    day: string;
 
-  @Prop({ required: true })
-  dt: number;
+    lat: number;
 
-  @Prop({ required: true })
-  weather: string;
+    lon: number;
 
-  @Prop({ required: true })
-  temperature: number;
+    dt: number;
 
-  @Prop({ required: true })
-  feels_like: number;
+    weather: string;
 
-  @Prop()
-  pressure: number;
+    temperature: number;
 
-  @Prop()
-  humidity: number;
+    feels_like: number;
 
+    pressure: number;
+
+    humidity: number;
+  };
   @Prop({ required: true, type: Date })
   expirationDate: Date;
 }

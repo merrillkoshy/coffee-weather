@@ -12,7 +12,7 @@ export class OpenweatherService {
   readonly HISTORIC_WEATHER_API_URL =
     'https://api.openweathermap.org/data/2.5/onecall/timemachine';
 
-  readonly UNIT_METRICS = 'imperial';
+  readonly UNIT_METRICS = 'metric';
 
   constructor(private readonly configService: ConfigService) {}
 

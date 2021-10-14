@@ -1,8 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { City } from './schemas/city-weather.schema';
-import { AxiosResponse } from 'axios';
 import { OpenweatherResponse } from '../openweather/openweather.response';
 import { CityHistory } from './schemas/city-history.schema';
 
@@ -13,15 +12,16 @@ export class MongoService {
     @InjectModel(CityHistory.name) private cityHistoryModel: Model<CityHistory>,
   ) {}
 
+  //There are two types of docs created, one is with current data that should
+  //be read when a plain GET request is made. And the other one stores
+  //historical data of the past 5 days, read when a citywise GET request
+  //is called.
   async create({
     name,
-    cityId,
+    id,
     coord,
     weather,
-    temp,
-    feels_like,
-    pressure,
-    humidity,
+    main,
   }: OpenweatherResponse): Promise<City> {
     await this.cityWeatherModel
       .deleteOne({
@@ -34,123 +34,116 @@ export class MongoService {
     expirationDate.setHours(expirationDate.getHours() + 1);
 
     const city = new this.cityWeatherModel({
-      cityName: name,
-      cityId: cityId,
+      name: name,
+      id: id,
       coord: coord,
-      weather: weather[0].main ?? 'No info!',
-      temperature: temp,
-      feels_like: feels_like,
-      pressure: pressure,
-      humidity: humidity,
+      weather: weather,
+      main: main,
       expirationDate,
     });
     return city.save();
-  }
-  async createMany(bundle: any) {
-    // eslint-disable-next-line prettier/prettier
-    try {
-      // eslint-disable-next-line prettier/prettier
-      const result = await bundle.map(async single => {
-        const createCityData = await single;
-        if (createCityData) this.create(createCityData?.data);
-      });
-      return await result;
-    } catch (error) {
-      console.log(error);
-    }
   }
 
   findAllCities(): Promise<City[]> {
     return this.cityWeatherModel.find().exec();
   }
 
-  findCityWeather(cityName: string): Promise<City> {
-    return this.cityWeatherModel
-      .findOne({ cityName: { $regex: new RegExp(cityName, 'i') } })
-      .exec();
-  }
-
-  findCoords(cityName: string): Promise<City> {
-    return this.cityWeatherModel
-      .findOne({ cityName: { $regex: new RegExp(cityName, 'i') } })
-      .exec();
-  }
-  findCityHistory(cityName: string): Promise<CityHistory[]> {
-    return this.cityHistoryModel
-      .find({
-        cityName: { $regex: new RegExp(cityName, 'i') },
-      })
-      .exec();
-  }
-  // update(id: number, updateMongoDto: UpdateMongoDto) {
-  //   return `This action updates a #${id} mongo`;
+  //Not asked in the assessment to retreive a city from db explicitly.
+  // But just in case..
+  //
+  // findCityWeather(cityName: string): Promise<City> {
+  //   return this.cityWeatherModel
+  //     .findOne({ cityName: { $regex: new RegExp(cityName, 'i') } })
+  //     .exec();
   // }
 
+  //The API only accepts coordinates, not names or id for retrieval
+  //Therefore this request is our middleware request
+  findCoords(name: string): Promise<City> {
+    //should run a case-insensitive regex to get the data from the doc.
+    return this.cityWeatherModel
+      .findOne({ name: { $regex: new RegExp(name, 'i') } })
+      .exec();
+  }
+  //Gets historical data (5days) from the history doc.
+  findCityHistory(name: string): Promise<CityHistory[]> {
+    return this.cityHistoryModel
+      .find({
+        name: { $regex: new RegExp(name, 'i') },
+      })
+      .exec();
+  }
+  //Takes a number arg and references it in the doc to delete
   async remove(id: number) {
+    let existsInCityCurrent;
+    let existsInCityHistory;
     await this.cityWeatherModel
       .deleteOne({
-        cityId: { $eq: id },
+        id: { $eq: id },
       })
-      .exec();
+      .exec()
+      // eslint-disable-next-line prettier/prettier
+      .then(result => {
+        existsInCityCurrent = result.deletedCount;
+      });
     await this.cityHistoryModel
       .deleteMany({
-        cityId: { $eq: id },
+        id: { $eq: id },
+      })
+      .exec()
+      // eslint-disable-next-line prettier/prettier
+      .then(result => {
+        existsInCityHistory = result.deletedCount;
+      });
+    if (existsInCityCurrent < 1 || existsInCityHistory < 1)
+      return HttpStatus.NOT_FOUND;
+    if (existsInCityCurrent == 1 && existsInCityHistory == 1)
+      return HttpStatus.OK;
+  }
+  //Hopefully we are creating history now :)
+  //Typed input to typed data in the doc.
+  async createHistory(historyDataElement: {
+    name: string;
+    id: number;
+    historicData: {
+      day: string;
+
+      lat: number;
+
+      lon: number;
+
+      dt: number;
+
+      weather: OpenweatherResponse['weather'];
+
+      temperature: number;
+
+      feels_like: number;
+
+      pressure: number;
+
+      humidity: number;
+    }[];
+  }): Promise<CityHistory> {
+    // eslint-disable-next-line prettier/prettier
+    const name = historyDataElement.name;
+    const id = historyDataElement.id;
+    await this.cityHistoryModel
+      .deleteOne({
+        cityName: { $regex: new RegExp(name, 'i') },
       })
       .exec();
-    return `#${id} Out of current data and history`;
-  }
-  // {
-  //   name,
-  //   cityId,
-  //   lat,
-  //   lon,
-  //   dt,
-  //   weather,
-  //   temp,
-  //   feels_like,
-  //   pressure,
-  //   humidity,
-  // }: OpenweatherResponse
-  async createHistory(historyDataArray: any): Promise<CityHistory> {
-    return historyDataArray.forEach(
-      async (historyData: { day: string; data: any; cityName: string }) => {
-        const { lat, lon } = historyData?.data;
 
-        // eslint-disable-next-line prettier/prettier
-        const {
-          dt,
-          temp,
-          feels_like,
-          pressure,
-          humidity,
-          // eslint-disable-next-line prettier/prettier
-        } = historyData?.data.current;
-        const weather = historyData?.data?.current?.weather[0]?.main;
-        const name = historyData.cityName;
-        await this.cityHistoryModel
-          .deleteOne({
-            cityName: { $regex: new RegExp(name, 'i') },
-          })
-          .exec();
+    const expirationDate = new Date();
 
-        const expirationDate = new Date();
+    expirationDate.setHours(expirationDate.getHours() + 1);
 
-        expirationDate.setHours(expirationDate.getHours() + 1);
-
-        const city = new this.cityHistoryModel({
-          cityName: name,
-          lat: lat,
-          lon: lon,
-          dt: dt,
-          weather: weather,
-          temperature: temp,
-          feels_like: feels_like,
-          pressure: pressure,
-          humidity: humidity,
-          expirationDate,
-        });
-        return city.save();
-      },
-    );
+    const city = new this.cityHistoryModel({
+      cityName: name,
+      id: id,
+      historicData: historyDataElement.historicData,
+      expirationDate,
+    });
+    return city.save();
   }
 }

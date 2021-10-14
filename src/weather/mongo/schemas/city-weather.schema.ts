@@ -4,10 +4,10 @@ import { Document } from 'mongoose';
 @Schema()
 export class City extends Document {
   @Prop({ required: true, unique: true })
-  cityName: string;
+  name: string;
 
   @Prop({ required: true })
-  cityId: number;
+  id: number;
 
   @Prop({ type: Object, required: true })
   coord: {
@@ -15,23 +15,28 @@ export class City extends Document {
     lon: number;
   };
 
-  @Prop({ required: true })
-  weather: string;
+  @Prop({ type: Array, required: true })
+  weather: [
+    {
+      id: number;
+      main: string;
+      description: string;
+      icon: string;
+    },
+  ];
 
-  @Prop({ required: true })
-  temperature: number;
-
-  @Prop({ required: true })
-  feels_like: number;
-
-  @Prop()
-  pressure: number;
-
-  @Prop()
-  humidity: number;
+  @Prop({ type: Object, required: true })
+  main: {
+    temp: number;
+    feels_like: number;
+    temp_min: number;
+    temp_max: number;
+    pressure: number;
+    humidity: number;
+  };
 
   @Prop({ required: true, type: Date })
-  expirationDate: Date;
+  expirationDate?: Date;
 }
 
 export const CityWeatherSchema = SchemaFactory.createForClass(City);

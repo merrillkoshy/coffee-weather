@@ -11,9 +11,11 @@ import {
   CityHistorySchema,
 } from './mongo/schemas/city-history.schema';
 
+import { WeatherSchedulerService } from './weatherscheduler/weather.scheduler.service';
+
 @Module({
   controllers: [WeatherController],
-  providers: [MongoService, OpenweatherService],
+  providers: [MongoService, OpenweatherService, WeatherSchedulerService],
   imports: [
     ConfigModule,
     MongooseModule.forFeature([
