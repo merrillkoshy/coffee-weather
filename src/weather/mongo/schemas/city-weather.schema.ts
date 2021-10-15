@@ -35,6 +35,25 @@ export class City extends Document {
     humidity: number;
   };
 
+  @Prop({ type: Object, required: true })
+  daily?: [
+    {
+      dt: number;
+      temp: {
+        morn: number;
+        day: number;
+        eve: number;
+        night: number;
+      };
+      weather: [
+        {
+          main: string;
+        },
+      ];
+      pressure: number;
+    },
+  ];
+
   @Prop({ required: true, type: Date })
   expirationDate?: Date;
 }

@@ -24,7 +24,11 @@ export class WeatherSchedulerService {
       mongoRes.forEach(async res => {
         this.mongo.remove(res.id);
         const openweatherRes = await this.openweather.findCity(res.name);
-        return await this.mongo.create(openweatherRes.data);
+        const { coord, name, id } = await openweatherRes.data;
+        const oneApiCall = await this.openweather.findCurrentAndFutureCity(
+          coord,
+        );
+        return await this.mongo.create(oneApiCall.data, name, id);
       });
     }
   }

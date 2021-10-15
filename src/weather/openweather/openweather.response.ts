@@ -28,7 +28,19 @@ export class OpenweatherResponse {
     humidity: number;
     weather: Array<weather>;
   };
-  daily?: any;
+  daily?: {
+    dt: number;
+    temp: {
+      morn: number;
+      day: number;
+      eve: number;
+      night: number;
+    };
+    weather: {
+      main: string;
+    }[];
+    pressure: number;
+  }[];
   temp?: number;
 
   feels_like?: number;

@@ -16,13 +16,11 @@ export class MongoService {
   //be read when a plain GET request is made. And the other one stores
   //historical data of the past 5 days, read when a citywise GET request
   //is called.
-  async create({
-    name,
-    id,
-    coord,
-    weather,
-    main,
-  }: OpenweatherResponse): Promise<City> {
+  async create(
+    { lat, lon, current, daily }: OpenweatherResponse,
+    name: string,
+    id: number,
+  ): Promise<City> {
     await this.cityWeatherModel
       .deleteOne({
         cityName: { $regex: new RegExp(name, 'i') },
@@ -36,9 +34,15 @@ export class MongoService {
     const city = new this.cityWeatherModel({
       name: name,
       id: id,
-      coord: coord,
-      weather: weather,
-      main: main,
+      coord: { lat: lat, lon: lon },
+      weather: current.weather,
+      main: {
+        temp: current.temp,
+        feels_like: current.feels_like,
+        pressure: current.pressure,
+        humidity: current.humidity,
+      },
+      daily: daily,
       expirationDate,
     });
     return city.save();
@@ -66,9 +70,9 @@ export class MongoService {
       .exec();
   }
   //Gets historical data (5days) from the history doc.
-  findCityHistory(name: string): Promise<CityHistory[]> {
+  findCityHistory(name: string): Promise<CityHistory> {
     return this.cityHistoryModel
-      .find({
+      .findOne({
         name: { $regex: new RegExp(name, 'i') },
       })
       .exec();

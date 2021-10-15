@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import {
@@ -7,7 +8,7 @@ import {
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { Model } from 'mongoose';
-import { WeatherModule } from '../src/api-service/main';
+import { WeatherModule } from '../src/weather/weather.module';
 import { factory } from 'fakingoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
@@ -66,6 +67,7 @@ describe('AppController (e2e)', () => {
   };
   it('creates a city', async () => {
     try {
+      // eslint-disable-next-line prettier/prettier
       await postData().then(async result => {
         await expect(result.text).toContain('Saskatchewan');
       });
@@ -77,6 +79,7 @@ describe('AppController (e2e)', () => {
   });
   it('fetches a city', async () => {
     try {
+      // eslint-disable-next-line prettier/prettier
       await fetchData('Saskatchewan').then(async result => {
         await expect(result.text).toContain('Saskatchewan');
       });

@@ -49,6 +49,24 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     restart: unless-stopped
+  test:
+    container_name: nestjs_api_test
+    image: nestjs-api-test:1.0.0
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: npm run test
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+      - 9229:9229
+    networks:
+      - nesjs-network
+    depends_on:
+      - coffeexmongo
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
 networks:
   nesjs-network:
     driver: bridge

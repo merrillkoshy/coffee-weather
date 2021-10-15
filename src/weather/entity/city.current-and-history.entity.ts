@@ -92,6 +92,43 @@ export class CityCurrentAndHistoryEntity {
     humidity: number;
   };
   @ApiProperty({
+    example: `[
+      {
+      "dt":1634295600,
+      "temp":{
+        "day":51.8,
+        "night":39.33,
+        "eve":43.21,
+        "morn":44.96
+          },
+        "weather":[
+            {
+              "main":"Rain",
+            }
+          ],
+          "pressure":1001,
+      }
+    ]`,
+    description: 'An array of data for the next 7 days',
+  })
+  daily?: [
+    {
+      dt: number;
+      temp: {
+        morn: number;
+        day: number;
+        eve: number;
+        night: number;
+      };
+      weather: [
+        {
+          main: string;
+        },
+      ];
+      pressure: number;
+    },
+  ];
+  @ApiProperty({
     example: '2021-10-13T21:16:26.474Z',
     description:
       'Time till truthiness of the document & reference to fetch an updated document',

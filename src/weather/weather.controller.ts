@@ -15,6 +15,7 @@ import {
   ApiNotFoundResponse,
   ApiBody,
   ApiTags,
+  ApiCreatedResponse,
 } from '@nestjs/swagger';
 
 import { MongoService } from './mongo/mongo.service';
@@ -73,7 +74,7 @@ export class WeatherController {
     summary:
       'Creates a new city and retrieve the current temperature and other basic weather data for that city',
   })
-  @ApiOkResponse({ status: 201, description: 'New city created.' })
+  @ApiCreatedResponse({ status: 201, description: 'New city created.' })
   @ApiConflictResponse({
     status: 409,
     description: 'City with same name exists',
@@ -82,7 +83,9 @@ export class WeatherController {
   public async CreateAcity(@Body() city: createCityDto): Promise<any> {
     try {
       const openweatherRes = await this.openweather.findCity(city.cityName);
-      return await this.mongo.create(openweatherRes.data);
+      const { coord, name, id } = await openweatherRes.data;
+      const oneApiCall = await this.openweather.findCurrentAndFutureCity(coord);
+      return await this.mongo.create(oneApiCall.data, name, id);
     } catch (error) {
       console.error(error);
       if (error?.response?.status === 409) {
@@ -130,10 +133,10 @@ export class WeatherController {
       mongoRes.filter(res => {
         if (res.expirationDate.getTime() > new Date().getTime()) return res;
       });
+      return mongoRes;
     } else {
       throw new DataNotFoundHttpException();
     }
-    return { statusCode: 500, error: "Can't find any" };
   }
 
   @Get(':city/weather') //ep-5
@@ -154,8 +157,9 @@ export class WeatherController {
     // because then the cronjob will keep retrieving weather data for
     // it
     const mongoRes = await this.mongo.findCityHistory(cityName);
-    if (mongoRes && mongoRes.length > 0) {
-      return mongoRes;
+    if (mongoRes) {
+      if (mongoRes.expirationDate.getTime() > new Date().getTime())
+        return mongoRes;
     } else {
       try {
         //If a city is not found in the database, it should realtime retrieve the
@@ -170,6 +174,7 @@ export class WeatherController {
         const openweatherResCurrent = await this.openweather.findCurrentAndFutureCity(
           coords,
         );
+        console.log(openweatherResCurrent);
         // Should also include the weather data for the last 7 days (not longer)
         // (which should be retrieved from OpenWeatherMap API)
         //5 days is the API limit for this API on OpenWeatherMap, therefore we use 5.
@@ -192,6 +197,21 @@ export class WeatherController {
 
           humidity: number;
         }> = new Array(5);
+        const dailyArray: Array<{
+          dt: number;
+          temp: {
+            morn: number;
+            day: number;
+            eve: number;
+            night: number;
+          };
+          weather: [
+            {
+              main: string;
+            },
+          ];
+          pressure: number;
+        }> = new Array(7);
         for (let index = 0; index < 5; index++) {
           //The api instructs each call has to be seperate
           const dayMoment = moment().subtract(5 - index, 'd');
@@ -226,7 +246,7 @@ export class WeatherController {
           id: id,
           historicData: resultArray,
         };
-
+        const daily = openweatherResCurrent.data.daily;
         // eslint-disable-next-line prettier/prettier
         const {
           weather,
@@ -236,6 +256,24 @@ export class WeatherController {
           humidity,
           // eslint-disable-next-line prettier/prettier
         } = openweatherResCurrent.data.current;
+        for (let index = 0; index < 7; index++) {
+          dailyArray[index] = {
+            dt: daily[index].dt,
+            temp: {
+              morn: daily[index].temp.morn,
+              day: daily[index].temp.day,
+              eve: daily[index].temp.eve,
+              night: daily[index].temp.night,
+            },
+            weather: [
+              {
+                main: daily[index].weather[index].main,
+              },
+            ],
+            pressure: daily[index].pressure,
+          };
+        }
+
         const currentData = {
           name: name,
           cityId: id,
@@ -245,17 +283,18 @@ export class WeatherController {
           feels_like: feels_like,
           pressure: pressure,
           humidity: humidity,
+          daily: dailyArray,
         };
         await this.mongo.createHistory(historicData);
 
         return [currentData, ...resultArray];
       } catch (error) {
         console.error(error);
-        if (error?.response.status === 404) {
+        if (error?.response?.status === 404) {
           throw new CityNotFoundHttpException(cityName);
         }
         console.error(error);
-        return { statusCode: error?.response.status, error: error.message };
+        return { statusCode: error?.response?.status, error: error.message };
       }
     }
   }
